@@ -1,12 +1,15 @@
 "use client";
-import React from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { LoginForm } from '@/components/login-form';
+import { LoadingSpinner } from '@/components/ui/spinner';
 
 const LoginPage = () => {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async (data: { email: string; password: string }) => {
+    setLoading(true);
     try {
       const response = await fetch('/api/auth/login', {
         method: 'POST',
@@ -27,13 +30,19 @@ const LoginPage = () => {
       router.push('/dashboard');
     } catch (error) {
       console.error('Error during login:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
       <div className="w-full max-w-sm">
-        <LoginForm onSubmit={handleLogin} />
+        {loading ? (
+          <LoadingSpinner />
+        ) : (
+          <LoginForm onSubmit={handleLogin} />
+        )}
       </div>
     </div>
   );
